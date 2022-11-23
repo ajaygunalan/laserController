@@ -1,11 +1,10 @@
 # Mian: https://www.youtube.com/watch?v=hezISpFdxDo
 # Other Ref: https://github.com/ndrwnaguib/LaserPointerTracking/blob/master/track_laser.pyimport sys
-
 import cv2
 import numpy as np
 from imutils import contours
-# input_video_path = "basicShadow.mp4"
-input_video_path = 3
+input_video_path = "basicShadow.mp4"
+# input_video_path = 3
 cap = cv2.VideoCapture(input_video_path)
 pts = []
 
