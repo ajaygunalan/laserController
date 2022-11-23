@@ -1,6 +1,7 @@
 ### To Do
 1. Lowpass Filter
 2. Track by uisng Lucas Kanade and Horn-Schunk 
+3. Need to include the mapping mentioned by Leo
 
 
 

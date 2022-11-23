@@ -1,5 +1,6 @@
 # Mian: https://www.youtube.com/watch?v=hezISpFdxDo
 # Other Ref: https://github.com/ndrwnaguib/LaserPointerTracking/blob/master/track_laser.pyimport sys
+
 import cv2
 import numpy as np
 from imutils import contours
@@ -14,18 +15,15 @@ offset2 = 20
 
 # We need to set resolutions.
 # so, convert them from float to integer.
-frame_width = int(cap.get(3))
-frame_height = int(cap.get(4))
-
-size = (frame_width, frame_height)
+# frame_width = int(cap.get(3))
+# frame_height = int(cap.get(4))
+# size = (frame_width, frame_height)
 
 
 # Below VideoWriter object will create
 # a frame of above defined The output
 # is stored in 'filename.avi' file.
-result = cv2.VideoWriter('filename.avi',
-                         cv2.VideoWriter_fourcc(*'MJPG'),
-                         10, size)
+# result = cv2.VideoWriter('filename.avi',cv2.VideoWriter_fourcc(*'MJPG'), 10, size)
 while (1):
     ret, frame = cap.read()
     # height, width = frame.shape[:2]
@@ -50,7 +48,7 @@ while (1):
 
     # Write the frame into the
     # file 'filename.avi'
-    result.write(frame)
+    # result.write(frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
