@@ -67,14 +67,15 @@ cap = cv2.VideoCapture(input_video_path)
 initFilter(queueSize)
 while (1):
     [x, y], frame = getCentre()
-    maxLocTuple = lowPassFilter([x,y])
-    frameNoFilter = frame.copy()
-    cv2.circle(frame, maxLocTuple, 20, (0, 0, 255), 2, cv2.LINE_AA)
-    cv2.circle(frameNoFilter, tuple([x,y]), 20, (0, 0, 255), 2, cv2.LINE_AA)
+    (xFilt, yFilt) = lowPassFilter([x,y])
 
-    horiz = np.concatenate((frame, frameNoFilter), axis=1)
+    frameFilter = frame.copy()
+    cv2.circle(frame, tuple([x,y]), 20, (0, 0, 255), 2, cv2.LINE_AA)
+    cv2.circle(frameFilter, (xFilt, yFilt) , 20, (0, 0, 255), 2, cv2.LINE_AA)
 
-    cv2.imshow('Track Laser without Filter and Filter', horiz)
+    horiz = np.concatenate((frame, frameFilter), axis=1)
+
+    cv2.imshow('Original and Filterd', horiz)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
