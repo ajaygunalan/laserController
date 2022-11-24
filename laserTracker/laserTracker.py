@@ -7,45 +7,45 @@ from scipy import ndimage
 from collections import deque
 
 
+def getCentre():
+    _, frame = cap.read()
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    # Checks if array elements lie between lower & upper red.
+    mask = cv2.inRange(hsv, lower_red, upper_red)
+
+    # Finds the min & max element values and their positions.
+    (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(mask)
+
+    maxLoc= list(maxLoc)
+    maxLoc[0] = maxLoc[0] + offset1
+    maxLoc[1] = maxLoc[1] + offset2
+
+    return maxLoc, frame
+
+
 def initFilter(N):
     for i in range(0, N):
-        _, frame = cap.read()
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-        lower_red = np.array([0, 0, 255])
-        upper_red = np.array([255, 255, 255])
-
-        # Checks if array elements lie between lower & upper red.
-        mask = cv2.inRange(hsv, lower_red, upper_red)
-
-        # Finds the min & max element values and their positions.
-        (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(mask)
-    
-        maxLocList = list(maxLoc)
-        maxLocList[0] = maxLocList[0] + offset1
-        maxLocList[1] = maxLocList[1] + offset2
-
-        qX.append(maxLocList[0])
-        qY.append(maxLocList[1])
+        centre, _ = getCentre()
+        qX.append(centre[0])
+        qY.append(centre[1])
 
 
-def lowPassFilter(maxLocList):
+def lowPassFilter(center):
 
-    qX.append(maxLocList[0])
-    qY.append(maxLocList[1])
+    qX.append(center[0])
+    qY.append(center[1])
 
     FilterValX = ndimage.median_filter(qX, size=FilterSize)
     FilterValY = ndimage.median_filter(qY, size=FilterSize)
 
-    maxLocList[0] = FilterValX[queueSize-1]
-    maxLocList[1] = FilterValY[queueSize-1]
+    center[0] = FilterValX[queueSize-1]
+    center[1] = FilterValY[queueSize-1]
 
-    maxLocList[0] = int(maxLocList[0])
-    maxLocList[1] = int(maxLocList[1])
+    center[0] = int(center[0])
+    center[1] = int(center[1])
 
-    maxLocTuple =tuple(maxLocList)
-
-    return maxLocTuple
+    return tuple(center)
 
 
 # Parametrs
@@ -58,35 +58,24 @@ qY = deque(maxlen=queueSize)
 offset1 = 10
 offset2 = 20
 
+lower_red = np.array([0, 0, 255])
+upper_red = np.array([255, 255, 255])
+
 input_video_path = "./basicShadow.mp4"
 cap = cv2.VideoCapture(input_video_path)
 
 initFilter(queueSize)
-
 while (1):
-    ret, frame = cap.read()
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    lower_red = np.array([0, 0, 255])
-    upper_red = np.array([255, 255, 255])
-
-    # Checks if array elements lie between lower & upper red.
-    mask = cv2.inRange(hsv, lower_red, upper_red)
-
-    # Finds the min & max element values and their positions.
-    (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(mask)
-    
-    maxLocList = list(maxLoc)
-    maxLocList[0] = maxLocList[0] + offset1
-    maxLocList[1] = maxLocList[1] + offset2
-
-    maxLocTuple = lowPassFilter(maxLocList)
-
+    [x, y], frame = getCentre()
+    maxLocTuple = lowPassFilter([x,y])
+    frameNoFilter = frame.copy()
     cv2.circle(frame, maxLocTuple, 20, (0, 0, 255), 2, cv2.LINE_AA)
-    cv2.imshow('Track Laser with Filter', frame)
+    cv2.circle(frameNoFilter, tuple([x,y]), 20, (0, 0, 255), 2, cv2.LINE_AA)
 
+    horiz = np.concatenate((frame, frameNoFilter), axis=1)
+
+    cv2.imshow('Track Laser without Filter and Filter', horiz)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
 cap.release()
