@@ -72,7 +72,7 @@ offset2 = 20
 lower_red = np.array([0, 0, 255])
 upper_red = np.array([255, 255, 255])
 
-input_video_path = "./basicShadow.mp4"
+input_video_path = "./data/basicShadow.mp4"
 # input_video_path = 4
 cap = cv2.VideoCapture(input_video_path)
 
