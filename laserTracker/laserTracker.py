@@ -6,12 +6,6 @@ import numpy as np
 from scipy import ndimage
 from collections import deque
 
-import matplotlib.pyplot as plt
-
-from skimage import data, color, img_as_ubyte
-from skimage.feature import canny
-from skimage.transform import hough_ellipse
-from skimage.draw import ellipse_perimeter
 
 def getCentre():
     _, frame = cap.read()
@@ -20,40 +14,30 @@ def getCentre():
     # Checks if array elements lie between lower & upper red.
     mask = cv2.inRange(hsv, lower_red, upper_red)
 
-    # # Perform a Hough Transform
-    # # The accuracy corresponds to the bin size of a major axis.
-    # # The value is chosen in order to get a single high accumulator.
-    # # The threshold eliminates low accumulators
-    # result = hough_ellipse(mask, accuracy=20, threshold=250,
-    #                    min_size=100, max_size=120)
-    # result.sort(order='accumulator')
-    #
-    # # Estimated parameters for the ellipse
-    # best = list(result[-1])
-    # yc, xc, a, b = (int(round(x)) for x in best[1:5])
-    # orientation = best[5]
+    # Find all the contours in the binary mask
+    contours,hierarchy = cv2.findContours(mask,2,1)
 
-    # # Draw the ellipse on the original image
-    # cy, cx = ellipse_perimeter(yc, xc, a, b, orientation)
-    #
-    # # Draw the ellipse on the original image
-    # cy, cx = ellipse_perimeter(yc, xc, a, b, orientation)
+    big_contour = []
+    max = 0
+    cX = 0
+    cY = 0
 
+    for i in contours:
+        area = cv2.contourArea(i) #--- find the contour having biggest area ---
+        if(area > max):
+            max = area
+            big_contour = i
+            # compute the center of the contour
+            M = cv2.moments(big_contour)
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
 
-    # Finds the min & max element values and their positions.
-    (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(mask)
-
-    maxLoc= list(maxLoc)
-    maxLoc[0] = maxLoc[0] + offset1
-    maxLoc[1] = maxLoc[1] + offset2
-
-    # return [cy, cx], frame
-    return maxLoc, frame
+    return [cX, cY], frame, big_contour, mask
 
 
 def initFilter(N):
     for i in range(0, N):
-        centre, _ = getCentre()
+        centre, _, _, _ = getCentre()
         qX.append(centre[0])
         qY.append(centre[1])
 
@@ -88,25 +72,24 @@ offset2 = 20
 lower_red = np.array([0, 0, 255])
 upper_red = np.array([255, 255, 255])
 
-# input_video_path = "./basicShadow.mp4"
-input_video_path = 4
+input_video_path = "./basicShadow.mp4"
+# input_video_path = 4
 cap = cv2.VideoCapture(input_video_path)
 
 initFilter(queueSize) # 1 SOR 2SECONDS
 while (1):
-    [x, y], frame = getCentre()
+    [x, y], frame, contour, mask = getCentre()
     (xFilt, yFilt) = lowPassFilter([x,y])
 
-    frameFilter = frame.copy()
-    cv2.circle(frame, tuple([x,y]), 20, (0, 0, 255), 2, cv2.LINE_AA)
+    frameFilter = frame
+    cv2.circle(mask, tuple([x,y]), 20, (0, 0, 255), 2, cv2.LINE_AA)
+    cv2.drawContours(mask, contour, -1, (0,255,0), 3)
 
-
-    # frameFilter[yFilt, xFilt] = (0, 0, 255)
     cv2.circle(frameFilter, (xFilt, yFilt) , 20, (0, 0, 255), 2, cv2.LINE_AA)
+    cv2.drawContours(frameFilter, contour, -1, (0,255,0), 3)
 
-    horiz = np.concatenate((frame, frameFilter), axis=1)
-
-    cv2.imshow('Original and Filterd', horiz)
+    cv2.imshow('mask', mask)
+    cv2.imshow('Filterd', frameFilter)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
