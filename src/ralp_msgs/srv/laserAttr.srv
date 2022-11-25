@@ -1,0 +1,14 @@
+uint8 op
+uint16 id
+bool value_bool
+uint64 value_uint
+int64 value_int
+float32 value_float
+string value_string
+---
+bool err
+bool value_bool
+uint64 value_uint
+int64 value_int
+float32 value_float
+string value_string

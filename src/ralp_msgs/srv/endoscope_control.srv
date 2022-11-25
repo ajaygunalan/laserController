@@ -1,0 +1,5 @@
+float64 rotXVelocity
+float64 rotYVelocity
+float64 zVelocity
+---
+bool errorOccured
