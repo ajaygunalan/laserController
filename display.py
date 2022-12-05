@@ -1,11 +1,12 @@
-import cv2
-input_video_path = "./data/basicShadow.mp4"
-vid = cv2.VideoCapture(input_video_path)
-while(True):
-    ret, frame = vid.read()
-    cv2.imshow('frame', frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+from collections import deque
 
-vid.release()
-cv2.destroyAllWindows()
+qX = deque(maxlen=2)
+
+for i in range(0, 10):
+    qX.append(i)
+
+print(qX)
+print(qX[0])
+print(qX[-1])
+print(2*3)
+

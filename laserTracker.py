@@ -7,29 +7,20 @@ from scipy import ndimage
 from collections import deque
 
 #Gloal Variable
-queueSize = 10
-qX = deque(maxlen=queueSize)
-qY = deque(maxlen=queueSize)
+queueSize = 1
+x_pre = deque(maxlen=queueSize)
+y_pre = deque(maxlen=queueSize)
+filterGain = 0.5
 
 def init():
-    for i in (0, queueSize):
-        qX.append(i)
-        qY.append(i)
+    for i in range(0, queueSize):
+        x_pre.append(0)
+        y_pre.append(0)
 
-def lowPassFilter(center):
-    qX.append(center[0])
-    qY.append(center[1])
-
-    FilterValX = ndimage.median_filter(qX, size=5)
-    FilterValY = ndimage.median_filter(qY, size=5)
-
-    center[0] = sum(FilterValX)/len(FilterValX)
-    center[1] = sum(FilterValY)/len(FilterValY)
-
-    center[0] = int(center[0])
-    center[1] = int(center[1])
-
-    return tuple(center)
+def lowPassFilter(cordi):
+    x_filt = int(cordi[0] + (filterGain*x_pre[-1]))
+    y_filt = int(cordi[1] + (filterGain*y_pre[-1]))
+    return tuple([x_filt, y_filt])
 
 
 def main():
