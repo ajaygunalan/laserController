@@ -1,9 +1,0 @@
-#goal definition
-bool L
----
-#result definition
-bool L
----
-#feedback
-bool L
-bool pedal

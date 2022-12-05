@@ -1,11 +1,10 @@
+
 # Mian: https://www.youtube.com/watch?v=hezISpFdxDo
 # Other Ref: https://github.com/ndrwnaguib/LaserPointerTracking/blob/master/track_laser.pyimport sys
-
 import cv2
 import numpy as np
 from scipy import ndimage
 from collections import deque
-
 
 def getCentre():
     _, frame = cap.read()
@@ -72,7 +71,7 @@ offset2 = 20
 lower_red = np.array([0, 0, 255])
 upper_red = np.array([255, 255, 255])
 
-input_video_path = "./data/basicShadow.mp4"
+input_video_path = "data/basicShadow.mp4"
 # input_video_path = 4
 cap = cv2.VideoCapture(input_video_path)
 

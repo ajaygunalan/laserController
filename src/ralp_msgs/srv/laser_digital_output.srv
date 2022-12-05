@@ -1,4 +1,0 @@
-uint32 line_id
-bool active
----
-bool successful
