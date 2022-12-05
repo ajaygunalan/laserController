@@ -1,26 +1,27 @@
-
 # Mian: https://www.youtube.com/watch?v=hezISpFdxDo
 # Other Ref: https://github.com/ndrwnaguib/LaserPointerTracking/blob/master/track_laser.pyimport sys
 import cv2
 import numpy as np
-from scipy import ndimage
 from collections import deque
 
 #Gloal Variable
-queueSize = 1
-x_pre = deque(maxlen=queueSize)
-y_pre = deque(maxlen=queueSize)
-filterGain = 0.5
+q_size = 10
+x_pre = deque(maxlen=q_size)
+y_pre = deque(maxlen=q_size)
+gain = 0.5
 
 def init():
-    for i in range(0, queueSize):
+    for i in range(0, q_size):
         x_pre.append(0)
         y_pre.append(0)
 
 def lowPassFilter(cordi):
-    x_filt = int(cordi[0] + (filterGain*x_pre[-1]))
-    y_filt = int(cordi[1] + (filterGain*y_pre[-1]))
-    return tuple([x_filt, y_filt])
+    x_filt = cordi[0] + (gain * sum(x_pre)/len(x_pre))
+    y_filt = cordi[1] + (gain * sum(y_pre)/len(y_pre))
+
+    x_pre.append(x_filt)
+    y_pre.append(y_filt)
+    return tuple([int(x_filt), int(y_filt)])
 
 
 def main():

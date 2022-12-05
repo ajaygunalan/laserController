@@ -1,12 +1,11 @@
 from collections import deque
 
-qX = deque(maxlen=2)
+qX = deque(maxlen=10)
 
-for i in range(0, 10):
+for i in range(1, 11):
     qX.append(i)
 
 print(qX)
-print(qX[0])
-print(qX[-1])
-print(2*3)
+print(sum(qX)/len(qX))
+
 
