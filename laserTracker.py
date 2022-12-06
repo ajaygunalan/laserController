@@ -6,10 +6,10 @@ from collections import deque
 import statistics as stat
 
 #Gloal Variable
-q_size = 200
-x_pre = deque(maxlen=q_size)
-y_pre = deque(maxlen=q_size)
-gain = 0.8
+q_size = 1
+x_prev = deque(maxlen=q_size)
+y_prev = deque(maxlen=q_size)
+gain = 0.5
 clicked = False
 lower_red = np.array([0, 0, 255])
 upper_red = np.array([255, 255, 255])
@@ -19,11 +19,11 @@ point = (0, 0)
 
 
 def click(event, x, y, flags, param):
-    global x_pre, y_pre, pressed, clicked
+    global x_prev, y_prev, pressed, clicked
     if event == cv2.EVENT_LBUTTONDOWN:
         for i in range(0, q_size):
-            x_pre.append(0)
-            y_pre.append(0)
+            x_prev.append(0)
+            y_prev.append(0)
         clicked = True
 cv2.namedWindow("Click the laser")
 cv2.setMouseCallback("Click the laser",click)
@@ -41,12 +41,12 @@ cv2.destroyAllWindows()
 
 
 def lowPassFilter(cordi):
-    global x_pre, y_pre
-    x_filt = ((1-gain)*cordi[0]) + (gain*stat.mean(x_pre))
-    y_filt = ((1-gain)*cordi[1]) + (gain*stat.mean(y_pre))
+    global x_prev, y_prev
+    x_filt = ((1-gain)*cordi[0]) + (gain*stat.mean(x_prev))
+    y_filt = ((1-gain)*cordi[1]) + (gain*stat.mean(y_prev))
 
-    x_pre.append(x_filt)
-    y_pre.append(y_filt)
+    x_prev.append(x_filt)
+    y_prev.append(y_filt)
     return tuple([int(x_filt), int(y_filt)])
 
 
