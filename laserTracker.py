@@ -5,15 +5,25 @@ import numpy as np
 from collections import deque
 
 #Gloal Variable
-q_size = 10
+q_size = 60
 x_pre = deque(maxlen=q_size)
 y_pre = deque(maxlen=q_size)
 gain = 0.5
 
-def init():
-    for i in range(0, q_size):
-        x_pre.append(0)
-        y_pre.append(0)
+
+def click_event(event, x, y, flags, params):
+	# checking for left mouse clicks
+    if event == cv2.EVENT_LBUTTONDOWN:
+        for i in range(0, q_size):
+            x_pre.append(x)
+            y_pre.append(y)
+    print(x, y)
+
+
+def init(image):
+    cv2.imshow('Select the laser', image)
+    cv2.setMouseCallback('Select the laser', click_event)
+    cv2.waitKey(0)
 
 def lowPassFilter(cordi):
     x_filt = cordi[0] + (gain * sum(x_pre)/len(x_pre))
@@ -31,10 +41,14 @@ def main():
     input_video_path = "./data/basicShadow.mp4"
     cap = cv2.VideoCapture(input_video_path)
 
-    init()
 
+    is_initialized = True
     while (1):
         _, frame = cap.read()
+        if(is_initialized):
+            init(frame)
+            is_initialized =  False
+
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         # Checks if array elements lie between lower & upper red.
