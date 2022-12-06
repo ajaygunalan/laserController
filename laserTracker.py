@@ -16,6 +16,10 @@ input_video_path = "./data/basicShadow.mp4"
 cap = cv2.VideoCapture(input_video_path)
 point = (0, 0)
 
+for i in range(0, q_size):
+    x_pre.append(0)
+    y_pre.append(0)
+
 
 def click(event, x, y, flags, param):
     global x_pre, y_pre, pressed, clicked
@@ -40,6 +44,7 @@ cv2.destroyAllWindows()
 
 
 def lowPassFilter(cordi):
+    global x_pre, y_pre
     x_filt = cordi[0] + (gain * sum(x_pre)/len(x_pre))
     y_filt = cordi[1] + (gain * sum(y_pre)/len(y_pre))
 
